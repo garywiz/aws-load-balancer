@@ -1,0 +1,16 @@
+#!/usr/bin/python3
+
+"""
+Manager for NGINX load balancer
+
+Usage:
+    manage-nginx --dnsname=<dns-hostname> --dnsserver=<dns-server>
+"""
+
+import docopt
+
+options = docopt(__doc__)
+
+
+def main():
+    serverlist = get_serverlist()
