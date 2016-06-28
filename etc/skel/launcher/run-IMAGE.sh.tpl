@@ -44,7 +44,7 @@ docker_opt="$docker_opt \
   -e SSL_FRONT=$SSL_FRONT \
   -e SSL_BACK=$SSL_BACK \
   -e LB_DETECT_HOSTNAME=$LB_DETECT_HOSTNAME \
-  -e LB_DETECT_NAMESERVER=$LB_DETECT_NAMESERVER
+  -e LB_DETECT_NAMESERVER=$LB_DETECT_NAMESERVER"
 
 if [ "$STORAGE_LOCATION" != "" -a -d "$STORAGE_LOCATION" -a -w "$STORAGE_LOCATION" ]; then
   SELINUX_FLAG=$(sestatus 2>/dev/null | fgrep -q enabled && echo :z)
