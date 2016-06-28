@@ -7,10 +7,22 @@
 IMAGE="%(PARENT_IMAGE)"
 INTERACTIVE_SHELL="/bin/bash"
 
-# Uncomment to include port settings
-#PORTOPT="-p x:y"
+# You can specify the external host and ports for Nginx here.  These variables
+# are also passed into the container so that any application code which does redirects
+# can use these if need be.
 
 EXT_HOSTNAME=%(CONFIG_EXT_HOSTNAME:-localhost)
+EXT_PORT=8443
+SSL_FRONT=true
+SSL_BACK=false
+LB_DETECT_HOSTNAME=live-servers.aws.safeagsystems.com
+LB_DETECT_NAMESERVER=ns-47.awsdns-05.com
+
+if [ $SSL_FRONT == "true" ]; then
+    PORTOPT="-p $EXT_PORT:8443"
+else
+    PORTOPT="-p $EXT_PORT:8080"
+fi
 
 # If this directory exists and is writable, then it will be used
 # as attached storage
@@ -27,6 +39,12 @@ else
   docker_opt="-t -i -e TERM=$TERM --rm=true $PORTOPT"
 fi
 
+docker_opt="$docker_opt \
+  -e CONFIG_EXT_HOSTNAME=$EXT_HOSTNAME \
+  -e SSL_FRONT=$SSL_FRONT \
+  -e SSL_BACK=$SSL_BACK \
+  -e LB_DETECT_HOSTNAME=$LB_DETECT_HOSTNAME \
+  -e LB_DETECT_NAMESERVER=$LB_DETECT_NAMESERVER
 
 if [ "$STORAGE_LOCATION" != "" -a -d "$STORAGE_LOCATION" -a -w "$STORAGE_LOCATION" ]; then
   SELINUX_FLAG=$(sestatus 2>/dev/null | fgrep -q enabled && echo :z)

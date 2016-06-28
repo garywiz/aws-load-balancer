@@ -18,6 +18,8 @@ tar cf - \
 # Add additional setup commands for your production image here, if any.
 # ...
 
+pip install dnspython
+
 dpkg -i /apps/build/nginx-lb.deb
 rm -rf /apps/build
 

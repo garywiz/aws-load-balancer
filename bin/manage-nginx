@@ -4,13 +4,100 @@
 Manager for NGINX load balancer
 
 Usage:
-    manage-nginx --dnsname=<dns-hostname> --dnsserver=<dns-server>
+    manage-nginx [--dnsname=<dns-hostname>] [--dnsserver=<dns-server>...] [--force] [--non-fatal] [--verbose]
 """
 
+import os
+import socket
+import subprocess
+
 import docopt
+from dns import resolver
 
-options = docopt(__doc__)
+options = docopt.docopt(__doc__)
 
+SERVER_CACHE = os.environ['VAR_DIR'] + '/server.cache'
+
+DNS_HOSTNAME = options['--dnsname']
+DNS_SERVERS  = options['--dnsserver']
+
+if DNS_HOSTNAME is None and 'LB_DETECT_HOSTNAME' in os.environ:
+    DNS_HOSTNAME = os.environ['LB_DETECT_HOSTNAME']
+if not DNS_SERVERS and 'LB_DETECT_NAMESERVER' in os.environ:
+    DNS_SERVERS = os.environ['LB_DETECT_NAMESERVER'].split(',')
+
+def shell(cmd):
+    output = subprocess.check_output(cmd, shell=True)
+    return output
+
+def verbose(msg):
+    if options['--verbose']:
+        print(msg)
+
+def fatal(msg):
+    print("Error: " + msg)
+    exit(1)
+
+def maybe_fatal(msg):
+    if options['--non-fatal']:
+        print("Error (non-fatal): " + msg)
+        return
+    fatal(msg)
+
+def get_serverlist():
+    res = resolver.get_default_resolver()
+    if DNS_SERVERS is not None:
+        res.nameservers = [socket.gethostbyname(n) for n in DNS_SERVERS]
+    try:
+        answers = res.query(DNS_HOSTNAME, 'A')
+    except resolver.NoNameservers:
+        maybe_fatal("No nameservers could be found to resolve request")
+        return []
+    except resolver.NXDOMAIN:
+        maybe_fatal("DNS name {0} could not be found".format(DNS_HOSTNAME))
+        return []
+
+    return [a.address for a in answers]
 
 def main():
-    serverlist = get_serverlist()
+    if not DNS_HOSTNAME:
+        fatal("--dnsname is a required option")
+
+    serverlist = sorted(get_serverlist())
+    pid = os.environ['NGINX_PID_FILE']
+
+    if not serverlist:
+        maybe_fatal("No backend servers could be detected.")
+        if os.path.exists(pid):
+            shell("telchap stop nginx; rm -rf " + SERVER_CACHE)
+        return
+
+    if os.path.exists(SERVER_CACHE) and not options['--force']:
+        cache = eval(open(SERVER_CACHE, 'r').read())
+        # Nothing to do, silently return
+        if cache == serverlist:
+            verbose("server list unchanged")
+            return
+
+    # Now, reconfigure the NGINX server
+    
+    if os.environ['SSL_BACK'] == 'true':
+        sslport = ":443"
+    else:
+        sslport = ""
+
+    os.environ['NGINX_SERVER_LIST'] = "\n".join(["         server " + s + sslport + ";" for s in serverlist])
+
+    verbose("Updating nginx.conf with new server list: " + str(serverlist))
+    shell("tpl_envcp --overwrite $APPS_DIR/etc/nginx.conf.tpl $NGINX_CONF_FILE")
+
+    open(SERVER_CACHE, 'w').write(str(serverlist))
+
+    # Server list changed, restart nginx or start if it's stopped for some reason
+
+    if os.path.exists(pid):
+        shell("kill -HUP `cat {0}`".format(pid));
+    else:
+        shell("telchap start --force --enable nginx")
+
+main()

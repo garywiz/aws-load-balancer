@@ -7,8 +7,11 @@ echo ""
 echo "Now running inside container. Directory is: $APPS_DIR"
 echo ""
 
-port=${CONFIG_EXT_HTTP_PORT:-${CONFIG_EXT_PORT:-}}
-if [ "$port" != "" -a "$HTTPD_SERVER_NAME" != "" ]; then
-  echo "The default '$HTTPD_SERVER_NAME' site is running at http://$CONFIG_EXT_HOSTNAME:$port/"
-  echo ""
+# I typically work in the Emacs process buffer.  Your mileage may vary
+if [ "$EMACS" == "t" ]; then
+  stty -echo
+  alias ls='ls --color=never'
 fi
+
+alias apps="cd $APPS_DIR"
+alias NE="stty -echo"

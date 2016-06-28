@@ -8,7 +8,8 @@ INTERACTIVE_SHELL="/bin/bash"
 EXT_HOSTNAME=localhost
 
 # Uncomment to hardcode ports for startup.  Command line still overrides.
-#PORTOPT="-p x:y -p x:y"
+#PORTOPT="-p 8080:8080 -p x:y"
+PORTOPT="-p 8443:8443"
 
 usage() {
   echo "Usage: run.sh [-d] [-p port#] [-h] [extra-chaperone-options]"
@@ -83,5 +84,7 @@ fi
 MOUNT=${PWD#/}; MOUNT=/${MOUNT%%/*} # extract user mountpoint
 SELINUX_FLAG=$(sestatus 2>/dev/null | fgrep -q enabled && echo :z)
 
-$DOCKER_CMD run $options -v $MOUNT:$MOUNT$SELINUX_FLAG $PORTOPT --env CONFIG_EXT_HOSTNAME=$EXT_HOSTNAME $IMAGE \
+$DOCKER_CMD run $options -v $MOUNT:$MOUNT$SELINUX_FLAG $PORTOPT --env CONFIG_EXT_HOSTNAME=$EXT_HOSTNAME \
+    -e EMACS=$EMACS \
+    $IMAGE \
    --create $USER:$APPS/chaperone.d --config $APPS/chaperone.d $* $shellopt

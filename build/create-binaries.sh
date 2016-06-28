@@ -45,9 +45,9 @@ mv nginx-goodies-nginx* nginx-sticky-module-ng
 # Build nginx
 cd nginx-*
 ./configure --with-http_ssl_module --with-http_realip_module --with-http_gunzip_module --with-http_gzip_static_module \
-    --pid-path=/apps/var/run/nginx.pid \
-    --error-log-path=/apps/var/logs/nginx-error.log \
-    --http-log-path=/apps/var/logs/nginx-access.log \
+    --pid-path=/tmp/nginx.pid \
+    --error-log-path=/tmp/nginx-error.log \
+    --http-log-path=/tmp/nginx-access.log \
     --add-module=../nginx-sticky-module-ng
 make
 checkinstall <<CINST
