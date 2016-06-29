@@ -21,7 +21,6 @@ http {
      upstream safeag_backend {
      sticky name=SASA5_route no_fallback %(SSL_BACK:|true|secure|);
 %(NGINX_SERVER_LIST)
-%(NGINX_SERVER_LIST)
      }
 
      access_log %(NGINX_LOG_DIR)/access.log;
@@ -37,7 +36,15 @@ http {
 	listen 8080;
 )
 	 location / {
-	 	 proxy_pass %(SSL_FRONT:|true|https|http)://safeag_backend;
+	 	 proxy_pass %(SSL_BACK:|true|https|http)://safeag_backend;
          }
      }
+
+%(HTTP_REDIRECT:|true|
+     server {
+        listen 8080 default_server;
+	server_name _;
+	return 301 https://$host$request_uri;
+    }
+|)
 }

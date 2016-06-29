@@ -82,11 +82,11 @@ def main():
     # Now, reconfigure the NGINX server
     
     if os.environ['SSL_BACK'] == 'true':
-        sslport = ":443"
+        serverport = ":443"
     else:
-        sslport = ""
+        serverport = ":80"
 
-    os.environ['NGINX_SERVER_LIST'] = "\n".join(["         server " + s + sslport + ";" for s in serverlist])
+    os.environ['NGINX_SERVER_LIST'] = "\n".join(["         server " + s + serverport + ";" for s in serverlist])
 
     verbose("Updating nginx.conf with new server list: " + str(serverlist))
     shell("tpl_envcp --overwrite $APPS_DIR/etc/nginx.conf.tpl $NGINX_CONF_FILE")
