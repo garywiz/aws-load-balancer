@@ -2,7 +2,7 @@
 #Developer's startup script
 #Created by chaplocal on Sun Jun 26 04:05:41 UTC 2016
 
-IMAGE="garywiz/nginx-load-balancer"
+IMAGE="garywiz/aws-load-balancer"
 INTERACTIVE_SHELL="/bin/bash"
 
 EXT_HOSTNAME=localhost

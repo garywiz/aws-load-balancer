@@ -15,7 +15,7 @@ if [ "$CHAP_SERVICE_NAME" != "" ]; then
 fi
 
 # Uncomment to default to your new derivative image name...
-prodimage="garywiz/nginx-load-balancer"
+prodimage="garywiz/aws-load-balancer"
 
 [ "$1" != "" ] && prodimage="$1"
 
