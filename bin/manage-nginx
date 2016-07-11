@@ -88,8 +88,14 @@ def main():
 
     os.environ['NGINX_SERVER_LIST'] = "\n".join(["         server " + s + serverport + ";" for s in serverlist])
 
+    # Assure NGINX template is copied to the live location so it can be updated for 
+    # each instance.
+
+    if not os.path.exists(os.environ['NGINX_CONF_TPL']):
+        shell("cp $APPS_DIR/etc/nginx.conf.tpl $NGINX_CONF_TPL")
+    
     verbose("Updating nginx.conf with new server list: " + str(serverlist))
-    shell("tpl_envcp --overwrite $APPS_DIR/etc/nginx.conf.tpl $NGINX_CONF_FILE")
+    shell("tpl_envcp --overwrite $NGINX_CONF_TPL $NGINX_CONF_FILE")
 
     open(SERVER_CACHE, 'w').write(str(serverlist))
 

@@ -1,3 +1,12 @@
+#
+# IMPORTANT... Before making changes to the NGINX configuration:
+#
+# Always make changes to nginx.conf.tpl, NOT nginx.conf.
+# nginx.conf is generated each time the container is started, or when backend
+# servers change.  If you modify the template, you'll need to restart the container
+# before your changes will have an effect.
+#
+
 working_directory %(VAR_DIR);
 
 # Interestingly, Nginx will attempt to write to /tmp/error.log no matter WHAT you do, so
@@ -12,6 +21,8 @@ events {
 }
 
 http {
+     client_max_body_size  8M;
+
      client_body_temp_path %(VAR_DIR)/nginx_temp/client;
      proxy_temp_path       %(VAR_DIR)/nginx_temp/proxy;
      fastcgi_temp_path     %(VAR_DIR)/nginx_temp/fastcgi_temp;
