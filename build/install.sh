@@ -18,9 +18,12 @@ tar cf - \
 # Add additional setup commands for your production image here, if any.
 # ...
 
-pip install dnspython
+pip3 install dnspython
 
-dpkg -i /apps/build/nginx-lb.deb
+apk update
+apk add pcre logrotate
+
+cd /; tar xzf /apps/build/nginx-install.tar.gz
 rm -rf /apps/build
 
 # Clean up and assure permissions are correct

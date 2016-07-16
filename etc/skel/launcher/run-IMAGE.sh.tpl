@@ -11,13 +11,18 @@ INTERACTIVE_SHELL="/bin/bash"
 # are also passed into the container so that any application code which does redirects
 # can use these if need be.
 
-EXT_HOSTNAME=%(CONFIG_EXT_HOSTNAME:-localhost)
+LB_DETECT_HOSTNAME=backend-servers.example.org
+#LB_DETECT_NAMESERVER=ns.example.org
+
 EXT_PORT=8080
 SSL_EXT_PORT=8443
 SSL_FRONT=true
 SSL_BACK=false
-LB_DETECT_HOSTNAME=live-servers.aws.safeagsystems.com
-LB_DETECT_NAMESERVER=ns-47.awsdns-05.com
+
+EXT_HOSTNAME=%(CONFIG_EXT_HOSTNAME:-localhost)
+
+# If there is a stopped container with the same name, it will be deleted (below)
+CONTAINER_NAME=loadbal
 
 # If this is an AWS EC2 instance, then allow metadata input from the user data
 if [ -x /usr/bin/ec2metadata ]; then
@@ -29,9 +34,6 @@ if [ $SSL_FRONT == "true" ]; then
 else
     PORTOPT="-p $EXT_PORT:8080"
 fi
-
-# If there is a stopped container with the same name, scrap it
-CONTAINER_NAME=loadbal
 
 if docker inspect $CONTAINER_NAME >/dev/null 2>&1; then
    docker rm -v $CONTAINER_NAME

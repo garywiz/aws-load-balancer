@@ -43,14 +43,9 @@ if [ ! -f $var_setup_file ]; then
 fi
 
 if [ -d $APPS_DIR/startup.d ]; then
-  for sf in $( find $APPS_DIR/startup.d -type f -executable \! -name '*~' | sort ); do
+  for sf in $( find $APPS_DIR/startup.d -type f -perm +100 \! -name '*~' | sort ); do
     dolog "running $sf..."
     $sf
-    ec=$?
-    if [ "$ec" != "0" ]; then
-      critlog "Startup script ${sf##*/} failed with exit code '$ec'"
-      exit $ec
-    fi
   done
 fi
 

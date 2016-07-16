@@ -11,6 +11,10 @@ EXT_HOSTNAME=localhost
 #PORTOPT="-p 8080:8080 -p x:y"
 PORTOPT="-p 8443:8443"
 
+EXTRA_ENVS="-e SSL_FRONT=true \
+            -e LB_DETECT_NAMESERVERX=ns-47.awsdns-05.com \
+            -e LB_DETECT_HOSTNAME=www.google.com"
+
 usage() {
   echo "Usage: run.sh [-d] [-p port#] [-h] [extra-chaperone-options]"
   echo "       Run $IMAGE as a daemon or interactively (the default)."
@@ -85,6 +89,6 @@ MOUNT=${PWD#/}; MOUNT=/${MOUNT%%/*} # extract user mountpoint
 SELINUX_FLAG=$(sestatus 2>/dev/null | fgrep -q enabled && echo :z)
 
 $DOCKER_CMD run $options -v $MOUNT:$MOUNT$SELINUX_FLAG $PORTOPT --env CONFIG_EXT_HOSTNAME=$EXT_HOSTNAME \
-    -e EMACS=$EMACS \
+    -e EMACS=$EMACS $EXTRA_ENVS \
     $IMAGE \
    --create $USER:$APPS/chaperone.d --config $APPS/chaperone.d $* $shellopt

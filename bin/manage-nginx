@@ -46,7 +46,7 @@ def maybe_fatal(msg):
 
 def get_serverlist():
     res = resolver.get_default_resolver()
-    if DNS_SERVERS is not None:
+    if DNS_SERVERS:
         res.nameservers = [socket.gethostbyname(n) for n in DNS_SERVERS]
     try:
         answers = res.query(DNS_HOSTNAME, 'A')

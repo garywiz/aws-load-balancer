@@ -31,7 +31,7 @@ if [ ! -f Dockerfile ]; then
   exit 1
 fi
 
-./build/create-binaries.sh
+./build/create-binaries-alpine.sh
 
 # Update the image information for the new build so that the derivative image is the baseimage
 sed "s/^IMAGE_NAME=.*/IMAGE_NAME=${prodimage/\//\\\/}/" <etc/version.inc >build/new_version.inc

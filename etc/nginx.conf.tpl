@@ -29,8 +29,8 @@ http {
      scgi_temp_path        %(VAR_DIR)/nginx_temp/scgi_temp;
      uwsgi_temp_path       %(VAR_DIR)/nginx_temp/uwsgi_temp;
 
-     upstream safeag_backend {
-     sticky name=SASA5_route no_fallback %(SSL_BACK:|true|secure|);
+     upstream lb_backend {
+         sticky name=AWSLB_route no_fallback %(SSL_BACK:|true|secure|);
 %(NGINX_SERVER_LIST)
      }
 
@@ -47,7 +47,7 @@ http {
 	listen 8080;
 )
 	 location / {
-	 	 proxy_pass %(SSL_BACK:|true|https|http)://safeag_backend;
+	 	 proxy_pass %(SSL_BACK:|true|https|http)://lb_backend;
          }
      }
 
