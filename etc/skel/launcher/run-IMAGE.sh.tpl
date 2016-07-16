@@ -16,7 +16,7 @@ LB_DETECT_HOSTNAME=backend-servers.example.org
 
 EXT_PORT=8080
 SSL_EXT_PORT=8443
-SSL_FRONT=true
+SSL_FRONT=true     # Will have no effect if you don't install certificates, so 'true' is usually fine.
 SSL_BACK=false
 
 EXT_HOSTNAME=%(CONFIG_EXT_HOSTNAME:-localhost)
