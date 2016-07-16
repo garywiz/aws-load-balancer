@@ -44,9 +44,8 @@ Features of this Load Balancer are:
 Quick Start
 -----------
 
-You can get started quickly using the automated-build image hosted on Docker
-Hub. For example, to quickly create a running self-contained load-balancer server
-daemon:
+You can get started quickly using the [image hosted on Docker Hub](https://hub.docker.com/r/garywiz/aws-load-balancer/).
+For example, to quickly create a running self-contained load-balancer server daemon:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ docker pull garywiz/aws-load-balancer
